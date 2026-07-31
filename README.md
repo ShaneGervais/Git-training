@@ -1,4 +1,6 @@
-# Git-training
+# Git Training for Undergrads
+
+## What is Version Control?
 
 **Git** is a tool for tracking changes to your project over time. It lets you:
 - **Save snapshots** of your work at important milestones
@@ -10,14 +12,20 @@
 
 ---
 
-## Initializing our project
+## Getting Started
 
-Create a directory to store your project using 
-`mkdir ProjectName`
-`cd ProjectName`
-`git init`
+### Option 1: Create a new project
+```bash
+mkdir ProjectName
+cd ProjectName
+git init
+```
 
-or clone a project you want to collaborate on `git clone URL`
+### Option 2: Clone an existing project
+```bash
+git clone URL
+cd ProjectName
+```
 
 ### Configure Git (one-time setup)
 Before making commits, tell Git who you are:
@@ -26,29 +34,59 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
-## Setting the stage
-Now you can make some changes. You check the status of those changes with
-`git status` or anytime you want to know the status of your project.
+---
 
-Now to stage or save your changes locally you can add them to the project via: 
-- `git add filename.txt` adds a specific file
-- `git add --all` if there are new in files/dirs
-- `git add .` for a particular directory your in
-- `git add *` for new or modified files/dirs but no deleted ones
+## The Basic Workflow
+
+### 1. Check the Status
+After making changes to files, check what Git sees:
+```bash
+git status
+```
+
+This shows:
+- **Untracked files** – New files Git doesn't know about yet
+- **Modified files** – Files you changed but haven't staged
+- **Staged files** – Files ready to commit
+
+### 2. Stage Your Changes
+Add the files you want to include in your commit:
+
+```bash
+git add filename.txt          # Add a specific file
+git add .                     # Add all changes in current directory
+git add --all                 # Add all changes in entire project
+git add *.py                  # Add all Python files
+```
 
 **Tip:** Stage often and in logical groups. Each commit should represent one meaningful change.
 
+### 3. Restore Unstaged Changes
 If you messed up and want to discard changes before staging:
 ```bash
 git restore filename.txt      # Discard changes to one file
 git restore .                 # Discard all changes in current directory
 ```
 
-Finally to commit or implement your changes to the project: 
+### 4. Commit Your Changes
+Commit saves a snapshot of your staged changes with a message describing what you did:
 ```bash
 git commit -m "Add login functionality to auth module"
 ```
 
+**Good commit messages:**
+- ✅ "Fix bug in user authentication"
+- ✅ "Add error handling to file parser"
+- ✅ "Refactor database connection logic"
+
+**Bad commit messages:**
+- ❌ "fix stuff"
+- ❌ "asdf"
+- ❌ "more changes"
+
+**Why this matters:** Your teammates (and future you!) will read commit messages to understand why a change was made.
+
+### 5. Undo a Commit
 Already committed but regret it? You have options:
 
 ```bash
@@ -58,34 +96,60 @@ git restore HEAD~1            # Undo the commit and discard your changes
 
 ---
 
-## Branches
+## Working with Branches
 
-Say you want to implement a new feature on the project but are unsure this may make or break the integrity of the project. You may need a testing area or a new branch of the project.
+Branches let you work on features independently without affecting the main project.
 
-You can create a new branch with:
+**Scenario:** You want to add a new feature, but you're not sure if it will work. Create a branch to experiment safely.
 
-`git branch new_branch`
+### Create a Branch
+```bash
+git branch feature/dark-mode
+```
 
-You can use `git branch` to see how many branches there are.
+### List All Branches
+```bash
+git branch
+```
 
-To go to a different branch check-it-out: `git checkout branch_name`
+The branch with a `*` next to it is your current branch.
 
 ### Switch to a Branch
 ```bash
-git switch new_branch2
+git switch feature/dark-mode
 ```
 
-## Merge
+(Or use the older command: `git checkout feature/dark-mode`)
 
-Now that you made changes to the new branch, you may want to implement them in the main project branch. To do this inside main
-`git merge new_branch -m "Merges new_branch to main`
+### Create and Switch in One Command
+```bash
+git switch -c feature/dark-mode
+```
 
-Sometimes there are changes in the main branch that can be useful in your new_branch, so to merge main's changes to another branch
-`git merge main -m "Brings main's changes` (inside new_branch)
+---
 
-Warning sometimes there will be merging conflicts where two people made similar changes... a discussion between collaborators may be needed. 
+## Merging Branches
 
-### Merging Conflicts
+Once you've finished your feature on a branch, merge it back to `main`.
+
+### Merge a branch into main
+
+```bash
+git switch main               # First, switch to the main branch
+git pull origin main          # Get the latest changes from remote
+git merge feature/dark-mode   # Merge your feature branch
+git push origin main          # Push the merged changes back to remote
+```
+
+### Merging in the opposite direction
+If you want to bring the latest changes from `main` into your feature branch:
+
+```bash
+git switch feature/dark-mode  # Switch to your feature branch
+git merge main                # Merge main's changes into your branch
+```
+
+### Handling Merge Conflicts ⚠️
 If you and a teammate both changed the same lines, Git will create a **merge conflict**. Here's what to do:
 
 1. **See what changed:**
@@ -115,11 +179,6 @@ If you and a teammate both changed the same lines, Git will create a **merge con
 
 ---
 
-## Logs
-
-You can always check the different changes across your project with `git log`, you can check them out with `git checkout log_number` and compare different logs with
-`git diff log_1 log_2`
-
 ## Ignoring Files
 
 Some files shouldn't be tracked (node_modules, `.env`, cache files, etc.). Create a `.gitignore` file in your project root:
@@ -133,9 +192,76 @@ __pycache__/
 *.pyc
 ```
 
+Any files matching these patterns will be ignored by Git.
+
+---
+
+## Viewing History
+
+### See all commits
+```bash
+git log
+```
+
+Shows:
+- Commit hash (unique ID)
+- Author
+- Date
+- Commit message
+
+### See changes in specific commit
+```bash
+git show abc123def          # Replace with actual commit hash
+```
+
+### Compare two commits
+```bash
+git diff abc123def xyz789abc
+```
+
+### Travel back in time (viewing only)
+```bash
+git checkout abc123def      # View this commit
+git switch main             # Go back to main
+```
+
+---
+
+## Remote Operations: Push, Pull, and Fetch
+
+Your local repository is separate from the remote (GitHub/GitLab). You need to sync them.
+
+### Push: Send your changes to remote
+```bash
+git push origin main        # Push commits from local main to remote main
+git push origin feature/new-feature  # Push a branch to remote
+```
+
+**After pushing a branch, teammates can see it and review your changes.**
+
+### Pull: Get and merge remote changes
+```bash
+git pull                    # Fetches and automatically merges remote changes
+```
+
+This is the most common command. Use it at the start of your work day.
+
+### Fetch: Just see what changed (don't merge yet)
+```bash
+git fetch                   # See what's new on remote
+```
+
+Then review before merging:
+```bash
+git diff main origin/main   # See differences before merging
+git merge origin/main       # Now merge if you like the changes
+```
+
+---
+
 ## Saving Work in Progress (Stash)
 
-You're in the middle of something but need to switch branches. Don't commit unfinished work‚Äîuse stash:
+You're in the middle of something but need to switch branches. Don't commit unfinished work—use stash:
 
 ```bash
 git stash                   # Save your changes temporarily
@@ -150,20 +276,16 @@ git stash pop               # Restore your saved changes
 
 ---
 
-## Pushing, Fetching and Pulling
+## Common Beginner Mistakes 🚨
 
-Pushing -> pushing changes to the remote repository
+- **Forgetting `git add`** – You modified files but they won't be committed unless you add them
+- **Committing secrets** – Never commit passwords, API keys, or `.env` files (use `.gitignore`)
+- **Pulling before pushing** – Always `git pull` before you push to avoid conflicts
+- **Bad commit messages** – Future you will hate present you for "fix stuff"
+- **Merging without testing** – Test your branch locally before merging to main
+- **Working directly on main** – Use feature branches; main should always be stable
 
-`git push origin main` all your commits will be pushed to the main but not the other branches
-
-Fetching -> fetches changes from the remote repository without merging them
-
-`git fetch` will show you how behind you are; you would need to merge if you want them in your local repo
-
-Pulling -> pulls changes from the remote repository and merges them
-
-`git pull` fetches and merges the remote changes to your local repo
-
+---
 
 ## Quick Reference
 
@@ -192,4 +314,4 @@ git stash                         # Save work temporarily
 
 ---
 
-
+**Questions?** Ask during the training session!
