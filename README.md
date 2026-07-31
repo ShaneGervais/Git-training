@@ -133,6 +133,21 @@ __pycache__/
 *.pyc
 ```
 
+## Saving Work in Progress (Stash)
+
+You're in the middle of something but need to switch branches. Don't commit unfinished work‚Äîuse stash:
+
+```bash
+git stash                   # Save your changes temporarily
+git switch another-branch   # Now you can safely switch
+```
+
+Later, get your work back:
+```bash
+git switch back-to-original-branch
+git stash pop               # Restore your saved changes
+```
+
 ---
 
 ## Pushing, Fetching and Pulling
@@ -149,21 +164,6 @@ Pulling -> pulls changes from the remote repository and merges them
 
 `git pull` fetches and merges the remote changes to your local repo
 
-
-## Saving Work in Progress (Stash)
-
-You're in the middle of something but need to switch branches. Don't commit unfinished work‚Äîuse stash:
-
-```bash
-git stash                   # Save your changes temporarily
-git switch another-branch   # Now you can safely switch
-```
-
-Later, get your work back:
-```bash
-git switch back-to-original-branch
-git stash pop               # Restore your saved changes
-```
 
 ## Quick Reference
 
